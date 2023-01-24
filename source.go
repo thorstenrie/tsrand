@@ -1,8 +1,9 @@
 package tsrand
 
+import "math/rand"
+
 type Source interface {
-	assert()
-	err() error
-	Int63() int64
-	Seed(s int64)
+	rand.Source64
+	Assert()
+	Err() error
 }

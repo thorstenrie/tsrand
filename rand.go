@@ -16,8 +16,8 @@ func NewDeterministicRand() (*rand.Rand, error) {
 
 // Seed and Read not secure for concurrency for sources from NewSource()!
 func New(src Source) (*rand.Rand, error) {
-	if src.assert(); src.err() != nil {
-		return nil, tserr.NotAvailable(&tserr.NotAvailableArgs{S: "rand source", Err: src.err()})
+	if src.Assert(); src.Err() != nil {
+		return nil, tserr.NotAvailable(&tserr.NotAvailableArgs{S: "rand source", Err: src.Err()})
 	}
 	return rand.New(src), nil
 }

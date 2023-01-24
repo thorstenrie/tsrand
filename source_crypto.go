@@ -21,23 +21,27 @@ func cryptoSource() *cSource {
 
 func (c *cSource) Seed(s int64) {}
 
-func (c *cSource) Int63() int64 {
-	var v uint64
+func (c *cSource) Uint64() (v uint64) {
 	c.mu.Lock()
 	c.e = binary.Read(crand.Reader, binary.BigEndian, &v)
 	c.mu.Unlock()
-	mask := ^uint64(1 << 63)
-	return int64(v & mask)
+	return v
 }
 
-func (c *cSource) assert() {
+func (c *cSource) Int63() int64 {
+	vu := c.Uint64()
+	mask := ^uint64(1 << 63)
+	return int64(vu & mask)
+}
+
+func (c *cSource) Assert() {
 	b := make([]byte, 1)
 	c.mu.Lock()
 	_, c.e = crand.Read(b)
 	c.mu.Unlock()
 }
 
-func (c *cSource) err() error {
+func (c *cSource) Err() error {
 	c.mu.Lock()
 	e := c.e
 	c.mu.Unlock()

@@ -26,6 +26,13 @@ func (m *dSource) Seed(s int64) {
 	m.mu.Unlock()
 }
 
+func (m *dSource) Uint64() uint64 {
+	m.mu.Lock()
+	v := m.drnd.Uint64()
+	m.mu.Unlock()
+	return v
+}
+
 func (m *dSource) Int63() int64 {
 	m.mu.Lock()
 	v := m.drnd.Int63()
@@ -33,8 +40,8 @@ func (m *dSource) Int63() int64 {
 	return v
 }
 
-func (m *dSource) err() error {
+func (m *dSource) Err() error {
 	return nil
 }
 
-func (m *dSource) assert() {}
+func (m *dSource) Assert() {}
