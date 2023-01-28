@@ -1,3 +1,6 @@
+// Copyright (c) 2023 thorstenrie
+// All rights reserved. Use is governed with GNU Affero General Public License v3.0
+// that can be found in the LICENSE file.
 package tsrand
 
 import (
@@ -22,7 +25,7 @@ func TestMRand(t *testing.T) {
 }
 
 func TestCrypto(t *testing.T) {
-	rnd, err := CryptoRand()
+	rnd, err := NewCryptoRand()
 	if err != nil {
 		t.Error(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "Crypto Rand", Err: err}))
 	}
@@ -35,13 +38,13 @@ func TestCrypto(t *testing.T) {
 }
 
 func TestExRand(t *testing.T) {
-	rnd, _ := New(NewExampleSource())
+	rnd, _ := New(newSimpleSource())
 	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(1)
+	rnd.Seed(10)
 	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(2)
+	rnd.Seed(11)
 	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(3)
+	rnd.Seed(12)
 	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
 	rnd.Seed(time.Now().UnixNano())
 	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
