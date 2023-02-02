@@ -1,3 +1,15 @@
+// Package tsrand provides a simple API for (pseudo-)random number generation based on the standard library.
+//
+// The tsrand package provides an interface to retrieve instances of type rand.Rand for cryptographically
+// secure random number generation or pseudo-random number generation. Additionally, the package
+// enables to retrieve a rand.Rand using a custom implementation of a source for random number generation.
+//
+// - The cryptographically secure random number generator is based on crypto/rand.
+// - The pseudo-random number generator is based on math/rand. It can be used to generate deterministic random numbers based on a seed.
+// - A custom source needs to implement tsrand.Source.
+//
+// The functions return a pointer to an instance of type rand.Rand. It returns nil and an error, if the random number generator source is not available.
+//
 // Copyright (c) 2023 thorstenrie
 // All rights reserved. Use is governed with GNU Affero General Public License v3.0
 // that can be found in the LICENSE file.
@@ -25,14 +37,15 @@ func NewCryptoRand() (*rand.Rand, error) {
 
 // NewPseudoRandomRand returns a new instance of rand.Rand which provides a pseudo-
 // random number generator based on math/rand. It is safe for concurrent use by multiple goroutines.
-// The output might be easily predictable and is unsuitable for security-sensitive services.
+// The random number generator is initialized with time.Now().UnixNano(). The output might be easily
+// predictable and is unsuitable for security-sensitive services.
 func NewPseudoRandomRand() (*rand.Rand, error) {
 	return New(newDeterministicSource(time.Now().UnixNano()))
 }
 
 // NewDeterministicRand returns a new instance of rand.Rand which provides a deterministic pseudo-
 // random number generator based on math/rand. It is safe for concurrent use by multiple goroutines.
-// It is initialized with defaultSeed and returns a deterministic random sequence. The output is
+// It is initialized with defaultSeed = 1 and returns a deterministic random sequence. The output is
 // easily predictable and is unsuitable for security-sensitive services.
 func NewDeterministicRand() (*rand.Rand, error) {
 	return New(newDeterministicSource(defaultSeed))
@@ -45,7 +58,7 @@ func New(src Source) (*rand.Rand, error) {
 	// Call Assert and check if Err returns an error
 	if src.Assert(); src.Err() != nil {
 		// If it returns an error, then return nil and the error
-		return nil, tserr.NotAvailable(&tserr.NotAvailableArgs{S: "rand source", Err: src.Err()})
+		return nil, tserr.NotAvailable(&tserr.NotAvailableArgs{S: "Source", Err: src.Err()})
 	}
 	// Return a new instance of rand.Rand and nil
 	return rand.New(src), nil
