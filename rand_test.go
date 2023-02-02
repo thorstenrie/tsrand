@@ -4,48 +4,60 @@
 package tsrand
 
 import (
-	"fmt"
 	"testing"
-	"time"
 
 	"github.com/thorstenrie/tserr"
 )
 
-func TestMRand(t *testing.T) {
-	rnd, _ := NewDeterministicRand()
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(1)
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(2)
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(time.Now().UnixNano())
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(time.Now().UnixNano())
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-}
+const (
+	intn int = 20     // test random numbers from half-open interval [0,intn)
+	itr  int = 100000 // number of iterations for random number generation tests
+)
 
-func TestCrypto(t *testing.T) {
+func TestCryptoRand(t *testing.T) {
 	rnd, err := NewCryptoRand()
 	if err != nil {
-		t.Error(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "Crypto Rand", Err: err}))
+		t.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "CryptoRand", Err: err}))
 	}
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(1)
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
+	if rnd == nil {
+		t.Fatal(tserr.NilPtr())
+	}
+	testRandInt(rnd)
+	testRandFloat(rnd)
 }
 
-func TestExRand(t *testing.T) {
-	rnd, _ := New(newSimpleSource())
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(10)
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(11)
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(12)
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
-	rnd.Seed(time.Now().UnixNano())
-	fmt.Println([3]int{rnd.Intn(6) + 1, rnd.Intn(6) + 1, rnd.Intn(6) + 1})
+func TestPseudoRand(t *testing.T) {
+	rnd, err := NewPseudoRandomRand()
+	if err != nil {
+		t.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewPseudoRandomRand", Err: err}))
+	}
+	if rnd == nil {
+		t.Fatal(tserr.NilPtr())
+	}
+	testRandInt(rnd)
+	testRandFloat(rnd)
+}
+
+func TestDeterministicRand(t *testing.T) {
+	rnd, err := NewDeterministicRand()
+	if err != nil {
+		t.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewDeterministicRand", Err: err}))
+	}
+	if rnd == nil {
+		t.Fatal(tserr.NilPtr())
+	}
+	testRandInt(rnd)
+	testRandFloat(rnd)
+}
+
+func TestSimpleRand(t *testing.T) {
+	rnd, err := New(newSimpleSource())
+	if err != nil {
+		t.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewDeterministicRand", Err: err}))
+	}
+	if rnd == nil {
+		t.Fatal(tserr.NilPtr())
+	}
+	testRandInt(rnd)
+	testRandFloat(rnd)
 }

@@ -52,8 +52,8 @@ func (ex *simpleSource) Int63() int64 {
 		// Save sign of current seed
 		sn float64 = sign(ex.s)
 		// Constant prime numbers p1 and p2
-		p1 uint64 = 15485863
-		p2 uint64 = 2038074743
+		p1 uint64 = 15485863   // 1000000th prime number
+		p2 uint64 = 2038074743 // 100000000th prime number
 		// Multiply absolute value of current seed with p1
 		a uint64 = abs(ex.s) * p1
 		// Generate a float of [0,1) and multiply with sign of current seed
