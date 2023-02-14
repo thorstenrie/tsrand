@@ -1,2 +1,4 @@
-github.com/thorstenrie/tserr v1.6.1 h1:xQL6OcMNzVLX5/HIZZMM7+Z9Eu0JdyRkd9RW1GFoADs=
-github.com/thorstenrie/tserr v1.6.1/go.mod h1:s/wDwTQb7zbVPut9qeDy24TQgRYvI/KBhL4ADAFG2kI=
+github.com/thorstenrie/lpstats v1.1.0 h1:DzcmOxy6+b+hmZt5yhpgAqzCcGnXDxzxrmVcp3YpVGk=
+github.com/thorstenrie/lpstats v1.1.0/go.mod h1:rUpqSYzz87TxxaCITZ2eZ5ku6kgpu+cE4wGJdaB+oNg=
+github.com/thorstenrie/tserr v1.7.0 h1:O/dS7cygh2Z4vIwdpHezDnb1jB1yjCtmD8/JyEcPkrk=
+github.com/thorstenrie/tserr v1.7.0/go.mod h1:8kiMcslns2DRdKLkLkp8MTb910lmtd9uPsElyILdkjA=

@@ -19,7 +19,7 @@ type dSource struct {
 	drnd *mrand.Rand // deterministic pseudo-random number generator
 }
 
-// newDeterministicSource returns a new instance of dSource. Source implements Source64,
+// NewDeterministicSource returns a new instance of dSource. Source implements Source64,
 // uses the math/rand pseudo-random number generator and can be used as source for a rand.Rand.
 // A dSource is safe for concurrent use by multiple goroutines. The output might be
 // easily predictable and is unsuitable for security-sensitive services. The deterministic

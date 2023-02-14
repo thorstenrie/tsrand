@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	intn int = 20     // test random numbers from half-open interval [0,intn)
-	itr  int = 100000 // number of iterations for random number generation tests
+	intn    int     = 20      // test random numbers from half-open interval [0,intn)
+	itr     int     = 1000000 // number of iterations for random number generation tests
+	maxDiff float64 = 0.1
 )
 
 func TestCryptoRand(t *testing.T) {
@@ -22,8 +23,8 @@ func TestCryptoRand(t *testing.T) {
 	if rnd == nil {
 		t.Fatal(tserr.NilPtr())
 	}
-	testRandInt(rnd)
-	testRandFloat(rnd)
+	testRandInt(t, rnd)
+	testRandFloat(t, rnd)
 }
 
 func TestPseudoRand(t *testing.T) {
@@ -31,11 +32,7 @@ func TestPseudoRand(t *testing.T) {
 	if err != nil {
 		t.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewPseudoRandomRand", Err: err}))
 	}
-	if rnd == nil {
-		t.Fatal(tserr.NilPtr())
-	}
-	testRandInt(rnd)
-	testRandFloat(rnd)
+	testRand(t, rnd)
 }
 
 func TestDeterministicRand(t *testing.T) {
@@ -43,21 +40,29 @@ func TestDeterministicRand(t *testing.T) {
 	if err != nil {
 		t.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewDeterministicRand", Err: err}))
 	}
-	if rnd == nil {
-		t.Fatal(tserr.NilPtr())
-	}
-	testRandInt(rnd)
-	testRandFloat(rnd)
+	testRand(t, rnd)
 }
 
 func TestSimpleRand(t *testing.T) {
-	rnd, err := New(newSimpleSource())
+	rnd, err := New(NewSimpleSource())
 	if err != nil {
-		t.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewDeterministicRand", Err: err}))
+		t.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewSimpleSource", Err: err}))
 	}
-	if rnd == nil {
-		t.Fatal(tserr.NilPtr())
+	testRand(t, rnd)
+}
+
+func TestMT32Rand(t *testing.T) {
+	rnd, err := New(NewMT32Source())
+	if err != nil {
+		t.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewMT32Source", Err: err}))
 	}
-	testRandInt(rnd)
-	testRandFloat(rnd)
+	testRand(t, rnd)
+}
+
+func TestMT64Rand(t *testing.T) {
+	rnd, err := New(NewMT64Source())
+	if err != nil {
+		t.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewMT64Source", Err: err}))
+	}
+	testRand(t, rnd)
 }
