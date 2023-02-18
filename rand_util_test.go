@@ -180,3 +180,18 @@ func testRandUint(t *testing.T, rnd *rand.Rand) {
 		t.Error(tserr.Equalf(&tserr.EqualfArgs{Var: "Variance of a", Actual: vari, Want: varie}))
 	}
 }
+
+// benchRandUint retrieves random unsigned integers from rnd for benchmarks.
+func benchRandUint(b *testing.B, rnd *rand.Rand) {
+	// Panic if t is nil
+	if b == nil {
+		panic("nil pointer")
+	}
+	// The test fails if rnd is nil
+	if rnd == nil {
+		b.Fatal(tserr.NilPtr())
+	}
+	for n := 0; n < b.N; n++ {
+		rnd.Uint64()
+	}
+}

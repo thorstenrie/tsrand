@@ -32,6 +32,17 @@ func TestCryptoRand(t *testing.T) {
 	testRandUint(t, rnd)
 }
 
+// BenchmarkCryptoRand performs a benchmark on the cryptographically secure random number generator
+func BenchmarkCryptoRand(b *testing.B) {
+	// Retrieve the cryptographically secure random number generator
+	rnd, err := NewCryptoRand()
+	// The test fails if an error occurs
+	if err != nil {
+		b.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "CryptoRand", Err: err}))
+	}
+	benchRandUint(b, rnd)
+}
+
 // TestPseudoRand retrieves random values from the pseudo-random number generator and performs the defined tests on arithmetic mean and variance.
 // The test fails, if the pseudo-random number generator is not available on the platform or if tests on the retrieved random numbers fail.
 func TestPseudoRand(t *testing.T) {
@@ -45,6 +56,17 @@ func TestPseudoRand(t *testing.T) {
 	testRand(t, rnd)
 }
 
+// BenchmarkPseudoRand performs a benchmark on the pseudo-random number generator
+func BenchmarkPseudoRand(b *testing.B) {
+	// Retrieve the pseudo-random number generator
+	rnd, err := NewPseudoRandomRand()
+	// The test fails if an error occurs
+	if err != nil {
+		b.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewPseudoRandomRand", Err: err}))
+	}
+	benchRandUint(b, rnd)
+}
+
 // TestDeterministicRand retrieves random values from the deterministic pseudo-random number generator and performs the defined tests on arithmetic mean and variance.
 // The test fails, if the deterministic pseudo-random number generator is not available on the platform or if tests on the retrieved random numbers fail.
 func TestDeterministicRand(t *testing.T) {
@@ -56,6 +78,17 @@ func TestDeterministicRand(t *testing.T) {
 	}
 	// Perform tests on the random number generator source
 	testRand(t, rnd)
+}
+
+// BenchmarkDeterministicRand performs a benchmark on the deterministic pseudo-random number generator
+func BenchmarkDeterministicRand(b *testing.B) {
+	// Retrieve the pseudo-random number generator
+	rnd, err := NewDeterministicRand()
+	// The test fails if an error occurs
+	if err != nil {
+		b.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewDeterministicRand", Err: err}))
+	}
+	benchRandUint(b, rnd)
 }
 
 // TestSimpleRand retrieves random values from a very simple implementation of an example pseudo-random number generator source
@@ -72,6 +105,17 @@ func TestSimpleRand(t *testing.T) {
 	testRand(t, rnd)
 }
 
+// BenchmarkSimpleRand performs a benchmark on the very simple implementation of an example pseudo-random number generator source
+func BenchmarkSimpleRand(b *testing.B) {
+	// Retrieve the pseudo-random number generator
+	rnd, err := New(NewSimpleSource())
+	// The test fails if an error occurs
+	if err != nil {
+		b.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewSimpleSource", Err: err}))
+	}
+	benchRandUint(b, rnd)
+}
+
 // TestMT32Rand retrieves random values from an implementation based on the 32-bit Mersenne Twister
 // and performs the defined tests on arithmetic mean and variance. The test fails, if the pseudo-random number generator
 // is not available on the platform  or if tests on the retrieved random numbers fail.
@@ -86,6 +130,17 @@ func TestMT32Rand(t *testing.T) {
 	testRand(t, rnd)
 }
 
+// BenchmarkMT32Rand performs a benchmark on the on the 32-bit Mersenne Twister based implemented pseudo-random number generator
+func BenchmarkMT32Rand(b *testing.B) {
+	// Retrieve the pseudo-random number generator
+	rnd, err := New(NewMT32Source())
+	// The test fails if an error occurs
+	if err != nil {
+		b.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewMT32Source", Err: err}))
+	}
+	benchRandUint(b, rnd)
+}
+
 // TestMT64Rand retrieves random values from an implementation based on the 64-bit Mersenne Twister
 // and performs the defined tests on arithmetic mean and variance. The test fails, if the pseudo-random number generator
 // is not available on the platform  or if tests on the retrieved random numbers fail.
@@ -98,4 +153,15 @@ func TestMT64Rand(t *testing.T) {
 	}
 	// Perform tests on the random number generator source
 	testRand(t, rnd)
+}
+
+// BenchmarkMT64Rand performs a benchmark on the on the 64-bit Mersenne Twister based implemented pseudo-random number generator
+func BenchmarkMT64Rand(b *testing.B) {
+	// Retrieve the pseudo-random number generator
+	rnd, err := New(NewMT64Source())
+	// The test fails if an error occurs
+	if err != nil {
+		b.Fatal(tserr.NotAvailable(&tserr.NotAvailableArgs{S: "NewMT64Source", Err: err}))
+	}
+	benchRandUint(b, rnd)
 }
