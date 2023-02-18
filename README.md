@@ -50,6 +50,40 @@ Each interface function returns a [rnd.Rand](https://pkg.go.dev/math/rand#Rand) 
 
 Except for the cryptographically secure random number generator, the output of the pseudo-random number generators might be easily predictable and is unsuitable for security-sensitive services.
 
+## Benchmark
+
+Results from linux, amd64, AMD Ryzen 5 2600X Six-Core Processor
+
+| Source  | Benchmark  | 
+|---|---|
+| [crypto/rand](https://pkg.go.dev/crypto/rand) | 465 ns/op |
+| [math/rand](https://pkg.go.dev/math/rand)  | 15 ns/op |
+| [SimpleSource](https://pkg.go.dev/github.com/thorstenrie/tsrand#SimpleSource)  | 40 ns/op |
+| [MT32Source](https://pkg.go.dev/github.com/thorstenrie/tsrand#MT32Source) | 33 ns/op |
+| [MT64Source](https://pkg.go.dev/github.com/thorstenrie/tsrand#MT64Source) | 17 ns/op |
+
+## Example
+
+```
+package main
+
+import (
+	"fmt"
+
+	"github.com/thorstenrie/tsrand"
+)
+
+func main() {
+	fmt.Println("Rolling a dice...")
+	rnd, _ := tsrand.NewCryptoRand()
+	fmt.Println(rnd.Intn(6) + 1)
+	rnd, _ = tsrand.NewPseudoRandomRand()
+	fmt.Println(rnd.Intn(6) + 1)
+	rnd, _ = tsrand.New(tsrand.NewSimpleSource())
+	fmt.Println(rnd.Intn(6) + 1)
+}
+```
+
 ## Unit tests
 
 Each Test function generates (pseudo-)random numbers using the defined source of the test. It generates random values of types integer, unsigned integer, and float64. The Test functions compare for each type the arithmetic mean and variance of the retrieved random numbers with the expected values for mean and variance. If the arithmetic mean and variance of the retrieved random numbers differ more than the constant maxDiff from expected values, the test fails. Therefore, the Test functions provide an indication if the sources for random number generators are providing random values in expected boundaries. The Test functions do not evaluate the quality of retrieved random numbers and implementation of the random number generator source. The output of the random number generator sources might be easily predictable and unsuitable for security-sensitive services.
