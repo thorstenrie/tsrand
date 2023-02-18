@@ -1,4 +1,4 @@
-// Package tsrand provides a simple API for (pseudo-)random number generation based on the standard library.
+// Package tsrand provides a simple API for (pseudo-)random number generation.
 //
 // The tsrand package provides an interface to retrieve instances of type rand.Rand for cryptographically
 // secure random number generation or pseudo-random number generation. Additionally, the package
@@ -7,6 +7,12 @@
 // - The cryptographically secure random number generator is based on crypto/rand.
 // - The pseudo-random number generator is based on math/rand. It can be used to generate deterministic random numbers based on a seed.
 // - A custom source needs to implement tsrand.Source.
+//
+// Example sources are provided:
+//
+// - SimpleSource based on a very simple example from Wikipedia
+// - MT32Source based on the 32-bit Mersenne Twister
+// - MT64Source based on the 64-bit Mersenne Twister
 //
 // The functions return a pointer to an instance of type rand.Rand. It returns nil and an error, if the random number generator source is not available.
 //
@@ -23,7 +29,7 @@ import (
 	"github.com/thorstenrie/tserr" // tserr
 )
 
-// defaultSeed is the default seed for the pseudo-random number generator
+// defaultSeed is the default seed for pseudo-random number generators, if a seed is not provided.
 const (
 	defaultSeed int64 = 1
 )

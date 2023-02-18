@@ -79,6 +79,6 @@ func (ex *SimpleSource) Err() error {
 	return nil
 }
 
-// Assert checks the availability of a random number generator source. For SimpleSource it is empty,
+// Assert checks the availability of a random number generator source. For SimpleSource, it is empty,
 // because the pseudo random number calculation is always available.
 func (ex *SimpleSource) Assert() {}

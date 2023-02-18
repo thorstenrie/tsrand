@@ -3,14 +3,22 @@
 // that can be found in the LICENSE file.
 package tsrand
 
-import "sync"
+// Import standard library package sync
+import "sync" // sync
 
+// MT32Source implements Source64 and can be used as source for a rand.Rand. It is based on the
+// reference implementation of the 32-bit Mersenne Twister.
+// MT32Source holds the pseudo-random number generator internal states mt and mti and a sync.Mutex
+// to enable concurrent use of an instance of a MT32Source. A MT32Source is safe for
+// concurrent use by multiple goroutines. The output might be easily predictable and is unsuitable
+// for security-sensitive services.
 type MT32Source struct {
-	mt  []uint32
-	mti int
+	mt  []uint32   // slice for the state vector
+	mti int        // index and mti==N+1 means mt is not initialized
 	mu  sync.Mutex // mutex to enable concurrency
 }
 
+// Period parameters based on the reference implementation of the 32-bit Mersenne Twister
 var (
 	mt32c = struct {
 		n, m                               int
@@ -18,18 +26,23 @@ var (
 	}{
 		n:           624,
 		m:           397,
-		matrixA:     0x9908b0df,
-		defaultSeed: 5489,
-		uMask:       0x80000000,
-		lMask:       0x7fffffff,
+		matrixA:     0x9908b0df, // constant vector a
+		defaultSeed: 5489,       // default seed
+		uMask:       0x80000000, // most significant w-r bits
+		lMask:       0x7fffffff, // least significant r bits
 	}
 )
 
+// NewMT32Source returns a new instance of MT32Source. MT32Source implements Source64,
+// is based on the reference implementation of the 32-bit Mersenne Twister and can be used as source for a rand.Rand.
+// A MT32Source is safe for concurrent use by multiple goroutines. The output might be
+// easily predictable and is unsuitable for security-sensitive services.
 func NewMT32Source() *MT32Source {
 	src := &MT32Source{mt: make([]uint32, mt32c.n), mti: mt32c.n + 1}
 	return src
 }
 
+// seedUnsafe initializes the state vector with seed s. It is not safe for concurrent use.
 func (src *MT32Source) seedUnsafe(s int64) {
 	src.mt[0] = uint32(s & 0xffffffff)
 	for src.mti = 1; src.mti < mt32c.n; src.mti++ {
@@ -37,14 +50,18 @@ func (src *MT32Source) seedUnsafe(s int64) {
 	}
 }
 
+// Seed initializes the state vector with seed s. It is safe for concurrent use.
 func (src *MT32Source) Seed(s int64) {
 	// Lock source
 	src.mu.Lock()
+	// Initialization of the state vector with seed s
 	src.seedUnsafe(s)
 	// Unlock source
 	src.mu.Unlock()
 }
 
+// uint32 returns a pseudo-random 32-bit value. The implementation is
+// based on mt19937.ar.c
 func (src *MT32Source) uint32() uint32 {
 	var (
 		y     uint32
@@ -54,6 +71,7 @@ func (src *MT32Source) uint32() uint32 {
 	src.mu.Lock()
 	if src.mti >= mt32c.n {
 		var kk int
+		// Initialize state vector with default seed if not initialized with a seed before
 		if src.mti == mt32c.n+1 {
 			src.seedUnsafe(int64(mt32c.defaultSeed))
 		}
@@ -71,28 +89,34 @@ func (src *MT32Source) uint32() uint32 {
 	}
 	y = src.mt[src.mti]
 	src.mti += 1
-
 	// Unlock source
 	src.mu.Unlock()
-
+	// Tempering
 	y ^= (y >> 11)
 	y ^= (y << 7) & 0x9d2c5680
 	y ^= (y << 15) & 0xefc60000
 	y ^= (y >> 18)
-
 	return y
 }
 
+// Uint64 returns a pseudo-random 64-bit value. The pseudo-random value
+// is calculated by two calls of uint32().
 func (src *MT32Source) Uint64() uint64 {
 	return uint64(src.uint32()) | uint64(src.uint32())<<32
 }
 
+// Int63 returns a pseudo-random 63-bit integer. The pseudo-random value
+// is calculated by two calls of uint32().
 func (src *MT32Source) Int63() int64 {
 	return int64(src.Uint64() >> 1)
 }
 
+// Err provides the last occuring error of the random number generator source. Since
+// no used operation of MT32Source returns an error, Err always returns nil.
 func (src *MT32Source) Err() error {
 	return nil
 }
 
+// Assert checks the availability of a random number generator source. For MT32Source, it is empty,
+// because the pseudo random number calculation is always available.
 func (src *MT32Source) Assert() {}
