@@ -111,7 +111,7 @@ func (src *MT32Source) Int63() int64 {
 	return int64(src.Uint64() >> 1)
 }
 
-// Err provides the last occuring error of the random number generator source. Since
+// Err provides the last occurring error of the random number generator source. Since
 // no used operation of MT32Source returns an error, Err always returns nil.
 func (src *MT32Source) Err() error {
 	return nil

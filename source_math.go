@@ -68,7 +68,7 @@ func (m *dSource) Int63() int64 {
 	return v
 }
 
-// Err provides the last occuring error of the random number generator source. Since
+// Err provides the last occurring error of the random number generator source. Since
 // no used operation of dSource returns an error, Err always returns nil.
 func (m *dSource) Err() error {
 	return nil

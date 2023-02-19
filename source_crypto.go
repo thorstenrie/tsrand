@@ -14,12 +14,12 @@ import (
 // cSource calls crypto/rand and therefore, it provides a cryptographically secure
 // random number generator source. To check, if it is available on the platform
 // Assert() should be called. If it is available, Err() will return nil, otherwise
-// will return an error. It holds error e which contains the last occuring error, if any,
+// will return an error. It holds error e which contains the last occurring error, if any,
 // and a sync.Mutex to enable concurrent use. cSource is safe for concurrent use by multiple goroutines.
 // cSource cannot be seeded, therefore Seed(int64) is empty.
 type cSource struct {
 	mu sync.Mutex // mutex to enable concurrency
-	e  error      // last error occuring, if any
+	e  error      // last error occurring, if any
 }
 
 // cryptoSrc is the cSource instance used by the interface
@@ -71,7 +71,7 @@ func (c *cSource) Assert() {
 	c.mu.Unlock()
 }
 
-// Err provides the last occuring error of the random number generator source, if any.
+// Err provides the last occurring error of the random number generator source, if any.
 // It returns nil, if no error occurrred.
 func (c *cSource) Err() error {
 	// Lock the source

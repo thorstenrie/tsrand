@@ -73,7 +73,7 @@ func (ex *SimpleSource) Int63() int64 {
 	return vi
 }
 
-// Err provides the last occuring error of the random number generator source. Since
+// Err provides the last occurring error of the random number generator source. Since
 // no used operation of SimpleSource returns an error, Err always returns nil.
 func (ex *SimpleSource) Err() error {
 	return nil
