@@ -3,22 +3,19 @@
 // that can be found in the LICENSE file.
 package tsrand
 
-// Import standard library packages
+// Import standard library packages and lpstats
 import (
 	"math" // math
-	"sync" // sync
 
 	"github.com/thorstenrie/lpstats" // lpstats
 )
 
 // SimpleSource implements Source64 and can be used as source for a rand.Rand.
-// It holds the seed s which can be initialized with Seed(int64) and a sync.Mutex
-// to enable concurrent use of an instance of a SimpleSource. A SimpleSource is safe for
+// It holds the seed s which can be initialized with Seed(int64). A SimpleSource is not safe for
 // concurrent use by multiple goroutines. The output might be easily predictable and is unsuitable
 // for security-sensitive services.
 type SimpleSource struct {
-	s  int64      // seed
-	mu sync.Mutex // mutex to enable concurrency
+	s int64 // seed
 }
 
 // NewSimpleSource returns a pointer to a new SimpleSource initiatlized with the default seed.
@@ -30,12 +27,8 @@ func NewSimpleSource() *SimpleSource {
 // Seed initializes the pseudo-random number generator source to
 // a deterministic state defined by s.
 func (ex *SimpleSource) Seed(s int64) {
-	// Lock source
-	ex.mu.Lock()
 	// Set seed
 	ex.s = s
-	// Unlock source
-	ex.mu.Unlock()
 }
 
 // Uint64 returns a pseudo-random 64-bit value. The pseudo-random value
@@ -47,8 +40,6 @@ func (ex *SimpleSource) Uint64() uint64 {
 // Int63 returns a pseudo-random 63-bit integer determined by a
 // deterministic calculation based on the seed.
 func (ex *SimpleSource) Int63() int64 {
-	// Lock source
-	ex.mu.Lock()
 	// Generate pseudo random Int63
 	var (
 		// Save sign of current seed
@@ -67,8 +58,6 @@ func (ex *SimpleSource) Int63() int64 {
 	)
 	// Increment seed
 	ex.s++
-	// Unlock source
-	ex.mu.Unlock()
 	// Return Int63
 	return vi
 }

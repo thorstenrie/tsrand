@@ -42,7 +42,7 @@ func NewCryptoRand() (*rand.Rand, error) {
 }
 
 // NewPseudoRandomRand returns a new instance of rand.Rand which provides a pseudo-
-// random number generator based on math/rand. It is safe for concurrent use by multiple goroutines.
+// random number generator based on math/rand. It is not safe for concurrent use by multiple goroutines.
 // The random number generator is initialized with time.Now().UnixNano(). The output might be easily
 // predictable and is unsuitable for security-sensitive services.
 func NewPseudoRandomRand() (*rand.Rand, error) {
@@ -50,7 +50,7 @@ func NewPseudoRandomRand() (*rand.Rand, error) {
 }
 
 // NewDeterministicRand returns a new instance of rand.Rand which provides a deterministic pseudo-
-// random number generator based on math/rand. It is safe for concurrent use by multiple goroutines.
+// random number generator based on math/rand. It is not safe for concurrent use by multiple goroutines.
 // It is initialized with defaultSeed = 1 and returns a deterministic random sequence. The output is
 // easily predictable and is unsuitable for security-sensitive services.
 func NewDeterministicRand() (*rand.Rand, error) {

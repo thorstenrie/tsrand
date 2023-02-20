@@ -3,19 +3,14 @@
 // that can be found in the LICENSE file.
 package tsrand
 
-// Import standard library package sync
-import "sync" // sync
-
 // MT64Source implements Source64 and can be used as source for a rand.Rand. It is based on the
 // reference implementation of the 64-bit Mersenne Twister.
-// MT64Source holds the pseudo-random number generator internal states mt and mti and a sync.Mutex
-// to enable concurrent use of an instance of a MT64Source. A MT64Source is safe for
+// MT64Source holds the pseudo-random number generator internal states mt and mti. A MT64Source is not safe for
 // concurrent use by multiple goroutines. The output might be easily predictable and is unsuitable
 // for security-sensitive services.
 type MT64Source struct {
-	mt  []uint64   // slice for the state vector
-	mti int        // index and mti==N+1 means mt is not initialized
-	mu  sync.Mutex // mutex to enable concurrency
+	mt  []uint64 // slice for the state vector
+	mti int      // index and mti==N+1 means mt is not initialized
 }
 
 // Period parameters based on the reference implementation of the 64-bit Mersenne Twister
@@ -35,29 +30,25 @@ var (
 
 // NewMT64Source returns a new instance of MT64Source. MT64Source implements Source64,
 // is based on the reference implementation of the 64-bit Mersenne Twister and can be used as source for a rand.Rand.
-// A MT64Source is safe for concurrent use by multiple goroutines. The output might be
+// A MT64Source is not safe for concurrent use by multiple goroutines. The output might be
 // easily predictable and is unsuitable for security-sensitive services.
 func NewMT64Source() *MT64Source {
 	src := &MT64Source{mt: make([]uint64, mt64c.n), mti: mt64c.n + 1}
 	return src
 }
 
-// seedUnsafe initializes the state vector with seed s. It is not safe for concurrent use.
-func (src *MT64Source) seedUnsafe(s int64) {
+// seed initializes the state vector with seed s.
+func (src *MT64Source) seed(s int64) {
 	src.mt[0] = uint64(s)
 	for src.mti = 1; src.mti < mt64c.n; src.mti++ {
 		src.mt[src.mti] = (uint64(6364136223846793005)*(src.mt[src.mti-1]^(src.mt[src.mti-1]>>62)) + uint64(src.mti))
 	}
 }
 
-// Seed initializes the state vector with seed s. It is safe for concurrent use.
+// Seed initializes the state vector with seed s.
 func (src *MT64Source) Seed(s int64) {
-	// Lock source
-	src.mu.Lock()
 	// Initialization of the state vector with seed s
-	src.seedUnsafe(s)
-	// Unlock source
-	src.mu.Unlock()
+	src.seed(s)
 }
 
 // Uint64 returns a pseudo-random 64-bit value. The implementation is
@@ -67,13 +58,11 @@ func (src *MT64Source) Uint64() uint64 {
 		x     uint64
 		mag01 [2]uint64 = [2]uint64{0, mt64c.matrixA}
 	)
-	// Lock source
-	src.mu.Lock()
 	if src.mti >= mt64c.n {
 		var i int
 		// Initialize state vector with default seed if not initialized with a seed before
 		if src.mti == mt64c.n+1 {
-			src.seedUnsafe(int64(mt64c.defaultSeed))
+			src.seed(int64(mt64c.defaultSeed))
 		}
 		for i = 0; i < mt64c.n-mt64c.m; i++ {
 			x = (src.mt[i] & mt64c.uMask) | (src.mt[i+1] & mt64c.lMask)
@@ -89,8 +78,6 @@ func (src *MT64Source) Uint64() uint64 {
 	}
 	x = src.mt[src.mti]
 	src.mti += 1
-	// Unlock source
-	src.mu.Unlock()
 	// Tempering
 	x ^= (x >> 29) & 0x5555555555555555
 	x ^= (x << 17) & 0x71D67FFFEDA60000

@@ -3,19 +3,14 @@
 // that can be found in the LICENSE file.
 package tsrand
 
-// Import standard library package sync
-import "sync" // sync
-
 // MT32Source implements Source64 and can be used as source for a rand.Rand. It is based on the
 // reference implementation of the 32-bit Mersenne Twister.
-// MT32Source holds the pseudo-random number generator internal states mt and mti and a sync.Mutex
-// to enable concurrent use of an instance of a MT32Source. A MT32Source is safe for
+// MT32Source holds the pseudo-random number generator internal states mt and mti. A MT32Source is not safe for
 // concurrent use by multiple goroutines. The output might be easily predictable and is unsuitable
 // for security-sensitive services.
 type MT32Source struct {
-	mt  []uint32   // slice for the state vector
-	mti int        // index and mti==N+1 means mt is not initialized
-	mu  sync.Mutex // mutex to enable concurrency
+	mt  []uint32 // slice for the state vector
+	mti int      // index and mti==N+1 means mt is not initialized
 }
 
 // Period parameters based on the reference implementation of the 32-bit Mersenne Twister
@@ -35,29 +30,25 @@ var (
 
 // NewMT32Source returns a new instance of MT32Source. MT32Source implements Source64,
 // is based on the reference implementation of the 32-bit Mersenne Twister and can be used as source for a rand.Rand.
-// A MT32Source is safe for concurrent use by multiple goroutines. The output might be
+// A MT32Source is not safe for concurrent use by multiple goroutines. The output might be
 // easily predictable and is unsuitable for security-sensitive services.
 func NewMT32Source() *MT32Source {
 	src := &MT32Source{mt: make([]uint32, mt32c.n), mti: mt32c.n + 1}
 	return src
 }
 
-// seedUnsafe initializes the state vector with seed s. It is not safe for concurrent use.
-func (src *MT32Source) seedUnsafe(s int64) {
+// seed initializes the state vector with seed s.
+func (src *MT32Source) seed(s int64) {
 	src.mt[0] = uint32(s & 0xffffffff)
 	for src.mti = 1; src.mti < mt32c.n; src.mti++ {
 		src.mt[src.mti] = (uint32(1812433253)*(src.mt[src.mti-1]^(src.mt[src.mti-1]>>30)) + uint32(src.mti))
 	}
 }
 
-// Seed initializes the state vector with seed s. It is safe for concurrent use.
+// Seed initializes the state vector with seed s.
 func (src *MT32Source) Seed(s int64) {
-	// Lock source
-	src.mu.Lock()
 	// Initialization of the state vector with seed s
-	src.seedUnsafe(s)
-	// Unlock source
-	src.mu.Unlock()
+	src.seed(s)
 }
 
 // uint32 returns a pseudo-random 32-bit value. The implementation is
@@ -67,13 +58,11 @@ func (src *MT32Source) uint32() uint32 {
 		y     uint32
 		mag01 [2]uint32 = [2]uint32{0, mt32c.matrixA}
 	)
-	// Lock source
-	src.mu.Lock()
 	if src.mti >= mt32c.n {
 		var kk int
 		// Initialize state vector with default seed if not initialized with a seed before
 		if src.mti == mt32c.n+1 {
-			src.seedUnsafe(int64(mt32c.defaultSeed))
+			src.seed(int64(mt32c.defaultSeed))
 		}
 		for kk = 0; kk < mt32c.n-mt32c.m; kk++ {
 			y = (src.mt[kk] & mt32c.uMask) | (src.mt[kk+1] & mt32c.lMask)
@@ -89,8 +78,6 @@ func (src *MT32Source) uint32() uint32 {
 	}
 	y = src.mt[src.mti]
 	src.mti += 1
-	// Unlock source
-	src.mu.Unlock()
 	// Tempering
 	y ^= (y >> 11)
 	y ^= (y << 7) & 0x9d2c5680

@@ -43,7 +43,7 @@ Each interface function returns a [rnd.Rand](https://pkg.go.dev/math/rand#Rand) 
 - Cryptographically secure random number generator based on [crypto/rand](https://pkg.go.dev/crypto/rand)
 - Pseudo-random number generator based on [math/rand](https://pkg.go.dev/math/rand)
 - Deterministic pseudo-random number generator based on [math/rand](https://pkg.go.dev/math/rand)
-- A custom implementation of a random number generator [Source](https://pkg.go.dev/github.com/thorstenrie/tsrand#Source) with [New](https://pkg.go.dev/github.com/thorstenrie/tsrand#New)
+- A custom implementation of a random number generator [Source](https://pkg.go.dev/github.com/thorstenrie/tsrand#Source) with [New](https://pkg.go.dev/github.com/thorstenrie/tsrand#New). It is the responsibility of the source to be safe for concurrent use by multiple goroutines.
 - Example of a very simple pseudo-random number generator [SimpleSource](https://pkg.go.dev/github.com/thorstenrie/tsrand#SimpleSource) based on an very simple example from [Wikipedia](https://en.wikipedia.org/wiki/Pseudorandom_number_generator#Implementation)
 - Example pseudo-random number generator [MT32Source](https://pkg.go.dev/github.com/thorstenrie/tsrand#MT32Source) based on the [32-bit Mersenne Twister](http://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/MT2002/emt19937ar.html)
 - Example pseudo-random number generator [MT64Source](https://pkg.go.dev/github.com/thorstenrie/tsrand#MT64Source) based on the [64-bit Mersenne Twister](http://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/emt64.html)
@@ -56,11 +56,11 @@ Results from linux, amd64, AMD Ryzen 5 2600X Six-Core Processor
 
 | Source  | Benchmark  | 
 |---|---|
-| [crypto/rand](https://pkg.go.dev/crypto/rand) | 465 ns/op |
-| [math/rand](https://pkg.go.dev/math/rand)  | 15 ns/op |
-| [SimpleSource](https://pkg.go.dev/github.com/thorstenrie/tsrand#SimpleSource)  | 40 ns/op |
-| [MT32Source](https://pkg.go.dev/github.com/thorstenrie/tsrand#MT32Source) | 33 ns/op |
-| [MT64Source](https://pkg.go.dev/github.com/thorstenrie/tsrand#MT64Source) | 17 ns/op |
+| [crypto/rand](https://pkg.go.dev/crypto/rand) | ~500 ns/op |
+| [math/rand](https://pkg.go.dev/math/rand)  | ~7 ns/op |
+| [SimpleSource](https://pkg.go.dev/github.com/thorstenrie/tsrand#SimpleSource)  | ~35 ns/op |
+| [MT32Source](https://pkg.go.dev/github.com/thorstenrie/tsrand#MT32Source) | ~12 ns/op |
+| [MT64Source](https://pkg.go.dev/github.com/thorstenrie/tsrand#MT64Source) | ~6 ns/op |
 
 ## Example
 
