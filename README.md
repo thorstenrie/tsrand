@@ -20,7 +20,7 @@ The package tsrand provides a simple interface for random numbers. Each interfac
 
 - **Simple**: Without configuration, just function calls
 - **Easy to use**: Retrieve random numbers with [rnd.Rand](https://pkg.go.dev/math/rand#Rand)
-- **Tested**: Unit tests with high [code coverage](https://gocover.io/github.com/thorstenrie/tsrand)
+- **Tested**: Unit tests with high code coverage.
 - **Dependencies**: Only depends on the [Go Standard Library](https://pkg.go.dev/std), [tserr](https://github.com/thorstenrie/tserr) and [lpstats](https://github.com/thorstenrie/lpstats)
 
 ## Usage
